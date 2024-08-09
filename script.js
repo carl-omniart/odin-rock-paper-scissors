@@ -1,10 +1,7 @@
-// function playGame
-
 function playGame() {
 
-  // Function to get the computer's choice.
-  // Will randomly return one of three strings: "rock", "paper", "scissors"
-
+  // Get computer choice
+  // Randomly return one of three strings: "rock", "paper", or "scissors"
   function getComputerChoice() {
     switch (Math.floor(Math.random() * 3 + 1)) {
     case 1:
@@ -16,9 +13,10 @@ function playGame() {
     };
   }
 
-  // Function to prompt user for choice.
-  // Throws error if user's input is not rock, paper, or scissors.
-
+  // Prompt human for choice of "rock", "paper", or "scissors"
+  // Allow uppercase, lowercase, or a mixture response
+  // Allow single character response: "r", "p", or "s"
+  // Throw error if user choice is not one of these
   function getHumanChoice() {
     let humanChoice = prompt("(R)ock, (P)aper, or (S)cissors?");
 
@@ -37,62 +35,67 @@ function playGame() {
     };
   }
 
-  // Function to play a round of rock, paper, scissors.
-  // First checks if there is a tie, if not compares plays.
-  // Returns result in form of a string message.
-
-  function playRound(humanChoice, computerChoice) {
-    if (humanChoice == computerChoice) {
-      return "Tie!";
-    };
-
-    switch (humanChoice) {
-      case "rock":
-        if (computerChoice == "scissors") {
-          humanScore++
-          return "Rock blunts scissors. You win!";
-        } else if (computerChoice == "paper") {
-          computerScore++
-          return "Paper wraps rock. Computer wins!";
-        };
-      case "paper":
-        if (computerChoice == "rock") {
-          humanScore++
-          return "Paper wraps rock. You win!";
-        } else if (computerChoice == "scissors") {
-          computerScore++
-          return "Scissors cut paper. Computer wins!";
-        };
-      case "scissors":
-        if (computerChoice == "paper") {
-          humanScore++
-          return "Scissors cut paper. You win!";
-        } else if (computerChoice == "rock") {
-          computerScore++
-          return "Rock blunts scissors. Computer wins!";
-        };
+  // Compare human and computer choices, return result
+  // Result is from human perspective: "win", "lose", or "draw"
+  function compareChoices(humanChoice, computerChoice) {
+    if (
+      humanChoice == "rock"     && computerChoice == "scissors" ||
+      humanChoice == "paper"    && computerChoice == "rock"     ||
+      humanChoice == "scissors" && computerChoice == "paper"
+    ) {
+      return "win"
+    } else if (
+      humanChoice == "rock"     && computerChoice == "paper"    ||
+      humanChoice == "paper"    && computerChoice == "scissors" ||
+      humanChoice == "scissors" && computerChoice == "rock"     
+    ) {
+      return "lose"
+    } else {
+      return "draw"
     };
   }
 
-  // Initiate score variables
+  // Use result ("win", "lose", "draw") to update scores
+  // Return string with updated scoreline
+  function updateScores(result) {
+    if (result == "win") {
+      humanScore++;
+    } else if (result == "lose") {
+      computerScore++
+    };
 
+    return `${humanScore}-${computerScore}`;
+  }
+
+  // Play round
+  function playRound() {
+
+    // Get and log choices
+    const humanSelection = getHumanChoice();
+    const computerSelection = getComputerChoice();
+    console.log(`${humanSelection} vs. ${computerSelection}`);
+
+    // Compare choices and log result
+    const result = compareChoices(humanSelection, computerSelection);
+    console.log(result);
+
+    // Update and log scores
+    const scoreline = updateScores(result);
+    console.log(`Score: ${scoreline}`);
+  };
+
+  // Initiate score variables
   let humanScore = 0;
   let computerScore = 0;
 
-  // Play five rounds per game
-  // Logs plays, results, and score
-
+  // Play five rounds
   for (let round = 1; round <= 5; round++) {
-    const humanSelection = getHumanChoice();
-    const computerSelection = getComputerChoice();
 
-    console.log(`You play ${humanSelection}`);
-    console.log(`Computer plays ${computerSelection}`);
+    // Log round number
+    console.log(`Round ${round}`);
 
-    const result = playRound(humanSelection, computerSelection);
-
-    console.log(result);
-    console.log(`You ${humanScore}, Computer ${computerScore}`);
+    // Play round
+    playRound();
   };
 }
 
