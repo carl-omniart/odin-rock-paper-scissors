@@ -1,53 +1,58 @@
 function playGame() {
+  function playRound(event) {
+    const playerChoice = getPlayerChoice(event);
+    playerChoiceSpan.textContent = playerChoice;
 
-  // Get computer choice
-  // Randomly return one of three strings: "rock", "paper", or "scissors"
-  function getComputerChoice() {
-    switch (Math.floor(Math.random() * 3 + 1)) {
-    case 1:
-      return "rock";
-    case 2:
-      return "paper";
-    case 3:
-      return "scissors";
+    const computerChoice = getComputerChoice();
+    computerChoiceSpan.textContent = computerChoice;
+
+    const result = compareChoices(playerChoice, computerChoice);
+    resultSpan.textContent = result;
+
+    updateScores(result);
+    playerScoreSpan.textContent = playerScore;
+    computerScoreSpan.textContent = computerScore;
+
+    if (playerScore == 5) {
+      announceWinner("Player");
+    } else if (computerScore == 5) {
+      announceWinner("Computer");
     };
   }
 
-  // Prompt human for choice of "rock", "paper", or "scissors"
-  // Allow uppercase, lowercase, or a mixture response
-  // Allow single character response: "r", "p", or "s"
-  // Throw error if user choice is not one of these
-  function getHumanChoice() {
-    let humanChoice = prompt("(R)ock, (P)aper, or (S)cissors?");
+  // Returns text of pressed button
+  function getPlayerChoice(event) {
+    return event.target.textContent;
+  }
 
-    switch (humanChoice.toLowerCase()) {
-      case "r":
-      case "rock":
-        return "rock";
-      case "p":
-      case "paper":
-        return "paper";
-      case "s":
-      case "scissors":
-        return "scissors";
-      default:
-        throw new TypeError("Not rock, paper, or scissors");
+  // Randomly returns "rock", "paper", or "scissors"
+  function getComputerChoice() {
+    switch (Math.floor(Math.random() * 3 + 1)) {
+    case 1:
+      return "Rock";
+    case 2:
+      return "Paper";
+    case 3:
+      return "Scissors";
     };
   }
 
   // Compare human and computer choices, return result
   // Result is from human perspective: "win", "lose", or "draw"
-  function compareChoices(humanChoice, computerChoice) {
+  function compareChoices(playerChoice, computerChoice) {
+    playerChoice = playerChoice.toLowerCase();
+    computerChoice = computerChoice.toLowerCase();
+
     if (
-      humanChoice == "rock"     && computerChoice == "scissors" ||
-      humanChoice == "paper"    && computerChoice == "rock"     ||
-      humanChoice == "scissors" && computerChoice == "paper"
+      playerChoice == "rock"     && computerChoice == "scissors" ||
+      playerChoice == "paper"    && computerChoice == "rock"     ||
+      playerChoice == "scissors" && computerChoice == "paper"
     ) {
       return "win"
     } else if (
-      humanChoice == "rock"     && computerChoice == "paper"    ||
-      humanChoice == "paper"    && computerChoice == "scissors" ||
-      humanChoice == "scissors" && computerChoice == "rock"     
+      playerChoice == "rock"     && computerChoice == "paper"    ||
+      playerChoice == "paper"    && computerChoice == "scissors" ||
+      playerChoice == "scissors" && computerChoice == "rock"     
     ) {
       return "lose"
     } else {
@@ -59,44 +64,31 @@ function playGame() {
   // Return string with updated scoreline
   function updateScores(result) {
     if (result == "win") {
-      humanScore++;
+      playerScore++;
     } else if (result == "lose") {
       computerScore++
     };
-
-    return `${humanScore}-${computerScore}`;
   }
 
-  // Play round
-  function playRound() {
-
-    // Get and log choices
-    const humanSelection = getHumanChoice();
-    const computerSelection = getComputerChoice();
-    console.log(`${humanSelection} vs. ${computerSelection}`);
-
-    // Compare choices and log result
-    const result = compareChoices(humanSelection, computerSelection);
-    console.log(result);
-
-    // Update and log scores
-    const scoreline = updateScores(result);
-    console.log(`Score: ${scoreline}`);
+  function announceWinner(winner) {
+    paragraph = document.createElement("p")
+    paragraph.textContent = `${winner} wins!`
+    results.appendChild(paragraph);
   };
 
   // Initiate score variables
-  let humanScore = 0;
+  let playerScore = 0;
   let computerScore = 0;
 
-  // Play five rounds
-  for (let round = 1; round <= 5; round++) {
+  const results            = document.getElementById("results");
+  const playerChoiceSpan   = document.querySelector("#choices .player span");
+  const computerChoiceSpan = document.querySelector("#choices .computer span");
+  const resultSpan         = document.querySelector("#result span");
+  const playerScoreSpan    = document.querySelector("#scores .player span");
+  const computerScoreSpan  = document.querySelector("#scores .computer span");
 
-    // Log round number
-    console.log(`Round ${round}`);
-
-    // Play round
-    playRound();
-  };
+  const buttons = document.querySelectorAll("#choices > button");
+  buttons.forEach((button) => button.addEventListener("click", playRound));
 }
 
 playGame();
