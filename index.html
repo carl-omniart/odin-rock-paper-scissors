@@ -2,37 +2,51 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8">
-    <title>Rock-Paper-Scissors</title>
+    <link rel="stylesheet" href="./styles/style.css">
+    <title>Rock Paper Scissors</title>
   </head>
   <body>
-    <div id="choices">
-      <button>Rock</button>
-      <button>Paper</button>
-      <button>Scissors</button>
-    </div>
-    <div id="results">
-      <ul id="choices">
-        Choices:
-        <li class="player">
-          Player: <span>-</span>
-        </li>
-        <li class="computer">
-          Computer: <span>-</span>
-        </li>
-      </ul>
-      <div id="result">
-        Result: <span>-</span>
+    <header>
+      <h1>Rock Paper Scissors</h1>
+    </header>
+    
+    <main>
+      <div id="game-box">
+        <div class="human">
+          <div class="scorebox">
+            <div class="score">0</div>
+            <h2 class="name">Human</h2>
+          </div>
+          <div class="choices">
+            <img src="./images/rock.jpeg" class="rock" title="Rock" alt="Rock">
+            <img src="./images/paper.jpeg" class="paper" title="Paper" alt="Paper">
+            <img src="./images/scissors.jpeg" class="scissors" title="Scissors" alt="Scissors">
+          </div>
+        </div>
+        <div class="computer">
+          <div class="scorebox">
+            <div class="score">0</div>
+            <h2 class="name">Computer</h2>
+          </div>
+          <div class="choices">
+            <img src="./images/rock.jpeg" class="rock" title="Rock" alt="Rock">
+            <img src="./images/paper.jpeg" class="paper" title="Paper" alt="Paper">
+            <img src="./images/scissors.jpeg" class="scissors" title="Scissors" alt="Scissors">
+          </div>
+        </div>
       </div>
-      <ul id="scores">
-        Score:
-        <li class="player">
-          Player: <span>0</span>
-        </li>
-        <li class="computer">
-          Computer: <span>0</span>
-        </li>
-      </ul>
-    </div>
-    <script src="./script.js"></script>
+
+      <div id="game-result" hidden></div>
+
+      <div id="game-start">Start New Game</div>
+    </main>
+
+    <footer>
+      <h3>
+        Built by <a href="https://github.com/carl-omniart">Carl Omniart</a> as part of <a href="https://www.theodinproject.com">The Odin Project</a>
+      </h3>
+    </footer>
+
+    <script src="./scripts/script.js"></script>
   </body>
 </html>

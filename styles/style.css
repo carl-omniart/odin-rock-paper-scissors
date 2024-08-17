@@ -1,0 +1,180 @@
+/* Viewport Flexbox: body contains header, main, and footer */
+
+body {
+  margin: 0;
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 32px;
+  min-height: 100vh;
+}
+
+main {
+  flex: 1;
+}
+
+/* Main Flexbox: main contains game-box, game-result, and game-start */
+
+main {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 32px;
+}
+
+/* Game-Box Flexbox: game-box contains player boxes */
+
+#game-box {
+  display: flex;
+  flex-flow: row nowrap;
+  gap: 60px;
+  justify-content: center;
+}
+
+/* Player Flexbox: player boxes contain scorebox and choices */
+
+.human, .computer {
+  width: 460px;
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 32px;
+}
+
+/* Choices Flexbox: choices contain choice elements */
+
+.choices {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  gap: 0 32px;
+}
+
+.choices > * {
+  width: 212px;
+}
+
+.choices > .computer > *:last-child {
+  order: -1;
+  margin: 0 100px;
+}
+
+/* Fonts */
+
+html {
+  font-size: 100%;
+}
+
+body {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  text-align: center;
+}
+
+h1 {
+  font-size: 3rem;
+  text-transform: uppercase;
+}
+
+h2, .scorebox {
+  font-size: 2rem;
+}
+
+h3, #game-start {
+  font-size: 1.5rem;
+}
+
+.scorebox, #game-start {
+  font-weight: 700;
+}
+
+#game-result {
+  font-size: 4rem;
+  text-transform: capitalize;
+}
+
+/* Link Styling */
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Colors, Padding, and Borders */
+
+body {
+  color: #505050;
+}
+
+header, footer {
+  padding: 20px 0;
+  background-color: #505050;
+  color: white;
+}
+
+h1, h2, h3 {
+  margin: 0;
+}
+
+#game-result {
+  color: #862a13;
+  filter: brightness(150%);
+}
+
+#game-start {
+  padding: 16px 36px;
+  color: white;
+  background-color: #862a13;
+  border-radius: 20px;
+  border-width: 0;
+  filter: grayscale(100%) brightness(150%);
+}
+
+img {
+  display: block;
+  box-sizing: border-box;
+  border: 6px solid #862a13;
+  border-radius: 100%;
+  overflow: hidden;
+}
+
+/* Flip human images horizontally */
+
+.human img {
+  transform: scaleX(-1);
+}
+
+/* Image Clicking */
+
+img {
+  filter: brightness(150%) grayscale(100%);
+  opacity: 60%;
+}
+
+img.clickable:hover {
+  opacity: 100%;
+}
+
+img.clicked {
+  filter: brightness(150%);
+  opacity: 100%;
+}
+
+/* Game-Start Clicking */
+
+#game-start {
+  opacity: 50%;
+}
+
+#game-start.clickable:hover {
+  opacity: 100%
+}
+
+/* Scored */
+
+.scored .scorebox {
+  color: #862a13;
+  filter: brightness(150%);
+}
