@@ -1,197 +1,299 @@
-// Turns On the "Start New Game" Button
+// ===== Game =====
 
-function initiateGameStartElem() {
-  getGameStartElem().classList.add("clickable");
-  getGameStartElem().addEventListener("click", startGame);
-}
-
-// Control Functions
-
-function startGame() {
-  clearRoundResult();
-  
-  getGameStartElem().hidden  = true;
-  getGameResultElem().hidden = true;
-
-  humanScore    = 0;
-  computerScore = 0;
-  updateScoreElements();
-
-  startClickableChoices();
-}
-
-function endGame() {
-  endClickableChoices();
-  getGameStartElem().hidden = false;
-}
-
-function playRound(event) {
-  event.stopPropagation();
-
-  const humanChoice    = getHumanChoice(event);
-  const computerChoice = getComputerChoice();
-  const winner         = shoot(humanChoice, computerChoice);
-
-  updateScore(winner);
-  displayRoundResult(humanChoice, computerChoice, winner);
-
-  if (isGameOver()) {
-    displayGameResult(winner);
-    endGame();
-    return;
+class Game {
+  constructor(winningScore = 5) {
+    this.winningScore = winningScore;
+    this.rounds       = [];
   }
 
-  startPause();
+  get lastRound() {
+    return this.rounds[this.rounds.length - 1];
+  }
+
+  get winner() {
+    if (this.score(   "human") == this.winningScore) return "human";
+    if (this.score("computer") == this.winningScore) return "computer";
+    return null;
+  }
+
+  score(player) {
+    return this.#count(this.rounds, (round) => round.winner == player);
+  }
+
+  isOver() {
+    return Boolean(this.winner);
+  }
+
+  playRound(choice) {
+    if (this.isOver()) return;
+    const round = new Round(choice);
+    this.rounds.push(round);
+    return round;
+  }
+
+  #count(array, condition) {
+    return array.filter(condition).length;
+  }
 }
 
-// Game Functions
+class Round {
+  constructor(humanChoice) {
+    this.human    = humanChoice;
+    this.computer = this.#pickOne(["rock", "paper", "scissors"]);
+    this.winner   = this.#shoot();
+  }
 
-function getHumanChoice(event) {
-  return event.target.title.toLowerCase();
-}
+  hasWinner() {
+    return this.winner != "draw";
+  }
 
-function getComputerChoice() {
-  const index = Math.floor(Math.random() * choices.length);
-  return choices.at(index);
-}
-
-function shoot(humanChoice, computerChoice) {
-  if (
-    humanChoice == "rock"     && computerChoice == "scissors" ||
-    humanChoice == "paper"    && computerChoice == "rock"     ||
-    humanChoice == "scissors" && computerChoice == "paper"
-  ) {
-    return "human";
-  } else if (
-    humanChoice == "rock"     && computerChoice == "paper"    ||
-    humanChoice == "paper"    && computerChoice == "scissors" ||
-    humanChoice == "scissors" && computerChoice == "rock"     
-  ) {
-    return "computer";
-  } else if (
-    humanChoice == computerChoice
-  ) {
-    return "draw";
-  } else {
-    throw new Error("What game are you playing?");
-  };
-}
-
-// Game Scores
-
-function resetScores() {
-}
-
-function updateScore(winner) {
-  if (winner ==    "human") humanScore++;
-  if (winner == "computer") computerScore++;
-  updateScoreElements();
-}
-
-function updateScoreElements() {
-  getScoreElem(   "human").textContent = humanScore;
-  getScoreElem("computer").textContent = computerScore;
-}
-
-// Toggles
-
-function displayRoundResult(humanChoice, computerChoice, winner) {
-  if (isPlayer(winner)) getPlayerElem(winner).classList.add("scored");
-  getChoiceElem(  "human",     humanChoice).classList.add("clicked");
-  getChoiceElem("computer", computerChoice).classList.add("clicked");
-}
-
-function clearRoundResult() {
-  for (player of ["human", "computer"]) {
-    getPlayerElem(player).classList.remove("scored");
-    for (choice of choices) {
-      getChoiceElem(player, choice).classList.remove("clicked");
+  #pickOne(array) {
+    const index = Math.floor(Math.random() * array.length);
+    return array.at(index);
+  }
+  
+  #shoot() {
+    if (
+      this.human == "rock"     && this.computer == "scissors" ||
+      this.human == "paper"    && this.computer == "rock"     ||
+      this.human == "scissors" && this.computer == "paper"
+    ) {
+      return "human";
+    } else if (
+      this.human == "rock"     && this.computer == "paper"    ||
+      this.human == "paper"    && this.computer == "scissors" ||
+      this.human == "scissors" && this.computer == "rock"     
+    ) {
+      return "computer";
+    } else if (
+      this.human == this.computer
+    ) {
+      return "draw";
+    } else {
+      throw new Error("What game are you playing?");
     };
-  };
+  } 
 }
 
-function displayGameResult(winner) {
-  getGameResultElem().textContent = winnerAnnouncement(winner);
-  getGameResultElem().hidden      = false;
+// ==== Model =====
+
+class Model {
+  constructor() {
+    this.game = null;
+  }
+
+  newGame(winningScore) {
+    this.game = new Game;
+    return this.game;
+  }
 }
 
-function winnerAnnouncement(winner) {
-  return `${capitalize(winner)} Wins!`;
+// ===== View =====
+
+class View {
+  constructor(doc) {
+    this.doc        = doc
+    this.body       = this.doc.querySelector("body");
+    this.gameResult = this.doc.getElementById("game-result"); 
+    this.gameStart  = this.doc.getElementById("game-start");
+  }
+
+  playerBox(player) {
+    return this.doc.getElementById(player);
+  }
+
+  scorebox(player) {
+    return this.playerBox(player).querySelector(".scorebox");
+  }
+
+  score(player) {
+    return this.playerBox(player).querySelector(".score");
+  }
+
+  name(player) {
+    return this.playerBox(player).querySelector(".name");
+  }
+
+  choiceBox(player) {
+    return this.playerBox(player).querySelector(".choices");
+  }
+
+  choices(player) {
+    return this.choiceBox(player).querySelectorAll(":scope > *");
+  }
+
+  choice(player, item) {
+    return this.choiceBox(player).querySelector(`.${item}`);
+  }
+
+  startGameStartButton() {
+    this.gameStart.classList.add("clickable");
+    this.gameStart.hidden = false;
+  }
+
+  stopGameStartButton() {
+    this.gameStart.classList.remove("clickable");
+    this.gameStart.hidden = true;
+  }
+
+  startChoosing(player) {
+    this.choices(player).forEach((c) => c.classList.add("clickable"));
+  }
+
+  stopChoosing(player) {
+    this.choices(player).forEach((c) => c.classList.remove("clickable"));
+  }
+
+  showRoundResult(round) {
+    this.choice(   "human",    round.human).classList.add("clicked");
+    this.choice("computer", round.computer).classList.add("clicked");
+    if (round.hasWinner()) {
+      this.scorebox(round.winner).classList.add("scored");
+    };
+  }
+
+  clearRoundResult(round) {
+    this.choice(   "human",    round.human).classList.remove("clicked");
+    this.choice("computer", round.computer).classList.remove("clicked");
+    if (round.hasWinner()) {
+      this.scorebox(round.winner).classList.remove("scored");
+    };
+  }
+
+  showGameResult(game) {
+    this.gameResult.textContent = this.#winnerAnnouncement(game.winner);
+    this.gameResult.hidden      = false;
+  }
+
+  clearGameResult(game) {
+    this.gameResult.textContent = "";
+    this.gameResult.hidden      = true;
+  }
+
+  updateName(player, name) {
+    this.name(player).textContent = name;
+  }
+
+  updateScore(player, score) {
+    this.score(player).textContent = score;
+  }
+
+  #winnerAnnouncement(winner) {
+    return `${this.#capitalize(winner)} Wins!`;
+  }
+  
+  #capitalize(string) {
+    return string[0].toUpperCase() + string.slice(1);
+  }
 }
 
-function capitalize(string) {
-  return string[0].toUpperCase() + string.slice(1);
+// ====== Controller =====
+
+class Controller {
+  constructor(model, view) {
+    this.model = model;
+    this.view  = view;
+    this.name  = "CONTROLLER";
+  }
+
+  // TO FIGURE OUT: PASSING THIS IN AN EVENT LISTENER
+
+  startGameStartButton() {
+    this.view.gameStart.addEventListener("click", startGame);
+    this.view.startGameStartButton();
+  }
+
+  stopGameStartButton() {
+    this.view.gameStart.removeEventListener("click", startGame);
+    this.view.stopGameStartButton();
+  }
+
+  startHumanChoosing() {
+    this.view.choices("human").forEach(
+      (c) => c.addEventListener("click", choose)
+    );
+    this.view.startChoosing("human");
+  }
+
+  stopHumanChoosing() {
+    this.view.choices("human").forEach(
+      (c) => c.removeEventListener("click", choose)
+    );
+    this.view.stopChoosing("human");
+  }
+
+  startNewGame() {
+    const game = model.newGame();
+    view.updateScore(   "human", game.score("human"));
+    view.updateScore("computer", game.score("computer"));
+  }
+
+  clearPreviousRound() {
+    view.clearRoundResult(this.model.game.lastRound);
+  }
+
+  clearPreviousGame() {
+    const game = this.model.game;
+    if (!game) return;
+    view.clearRoundResult(game.lastRound);
+    view.clearGameResult(game);
+  }
 }
 
-// Booleans
+// =====
 
-function isPlayer(player) {
-  return player == "human" || player == "computer";
+function startGame() {
+  controller.stopGameStartButton();
+  controller.clearPreviousGame();
+  controller.startNewGame();
+  controller.startHumanChoosing();
 }
 
-function isGameOver() {
-  return humanScore == winningScore || computerScore == winningScore;
+function stopGame() {
+  controller.stopHumanChoosing();
+  controller.startGameStartButton();
 }
 
-// Change DOM Elements
-
-function startClickableChoices() {
-  for (choice of choices) {
-    const choiceElem = getChoiceElem("human", choice);
-    choiceElem.addEventListener("click", playRound);
-    choiceElem.classList.add("clickable");
-  };
+function startClickToContinue() {
+  console.log("Start Click to Continue");
+  controller.stopHumanChoosing();
+  view.body.addEventListener("click", stopClickToContinue);
 }
 
-function endClickableChoices() {
-  for (choice of choices) {
-    const choiceElem = getChoiceElem("human", choice);
-    choiceElem.removeEventListener("click", playRound);
-    choiceElem.classList.remove("clickable");
-  };
+function stopClickToContinue() {
+  console.log("Stop Click to Continue");
+  view.body.removeEventListener("click", stopClickToContinue);
+  controller.clearPreviousRound();
+  controller.startHumanChoosing();
 }
 
-function startPause() {
-  endClickableChoices();
-  getBodyElem().addEventListener("click", endPause);
+function choose(event) {
+  event.stopPropagation();
+
+  const choice = event.target.title.toLowerCase();
+  const game   = model.game;
+  const round  = game.playRound(choice)
+
+  console.log(["Round Winner & Flag", round.winner, round.hasWinner()]);
+  
+  if (round.hasWinner()) view.updateScore(round.winner, game.score(round.winner));
+  view.showRoundResult(round);
+
+  if (game.isOver()) {
+    console.log("choose: game is over");
+    view.showGameResult(game);
+    stopGame();
+  } else {
+    console.log("choose: game is not over");
+    startClickToContinue();
+  }; 
 }
 
-function endPause() {
-  clearRoundResult();
-  getBodyElem().removeEventListener("click", endPause);
-  startClickableChoices();
-}
 
-// Get DOM Elements
+//
 
-function getBodyElem() {
-  return document.querySelector("body");
-}
+const view       = new View(document);
+const model      = new Model;
+const controller = new Controller(model, view);
 
-function getPlayerElem(player) {
-  return document.querySelector(`.${player}`);
-}
-
-function getScoreElem(player) {
-  return getPlayerElem(player).querySelector(".score");
-}
-
-function getChoiceElem(player, choice) {
-  return getPlayerElem(player).querySelector(`.choices .${choice}`);
-}
-
-function getGameResultElem() {
-  return document.getElementById("game-result");
-}
-
-function getGameStartElem() {
-  return document.getElementById("game-start");
-}
-
-const choices      = ["rock", "paper", "scissors"];
-const winningScore = 5;
-
-let humanScore     = 0;
-let computerScore  = 0;
-
-initiateGameStartElem();
+controller.startGameStartButton();

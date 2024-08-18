@@ -33,7 +33,7 @@ main {
 
 /* Player Flexbox: player boxes contain scorebox and choices */
 
-.human, .computer {
+#human, #computer {
   width: 460px;
   display: flex;
   flex-flow: column nowrap;
@@ -53,7 +53,7 @@ main {
   width: 212px;
 }
 
-.choices > .computer > *:last-child {
+#computer .choices > *:last-child {
   order: -1;
   margin: 0 100px;
 }
@@ -174,7 +174,7 @@ img.clicked {
 
 /* Scored */
 
-.scored .scorebox {
+.scored {
   color: #862a13;
   filter: brightness(150%);
 }
